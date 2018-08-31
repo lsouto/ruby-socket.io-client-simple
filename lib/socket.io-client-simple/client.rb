@@ -32,7 +32,7 @@ module SocketIO
                     @last_ping_at = Time.now.to_i
                   end
                 end
-                if @websocket.open? and Time.now.to_i - @last_pong_at > @ping_timeout/1000
+                if !@websocket.open? and Time.now.to_i - @last_pong_at > @ping_timeout/1000
                   @websocket.close
                   @state = :disconnect
                   __emit :disconnect
@@ -105,6 +105,7 @@ module SocketIO
           return unless @auto_reconnection
           return if @reconnecting
           @reconnecting = true
+          __emit :reconnect
           sleep rand(5) + 5
           connect
         end
